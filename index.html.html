@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafio da Coleta Seletiva | Feira Técnica 1º DS</title>
+  <style>
+    :root {
+      --azul: #1e88e5;
+      --vermelho: #e53935;
+      --verde: #43a047;
+      --amarelo: #fdd835;
+      --marrom: #6d4c41;
+      --cinza: #78909c;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --accent: #38bdf8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      background: linear-gradient(90deg, #38bdf8, #4ade80);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    /* Telas */
+    .screen {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tela Inicial */
+    .start-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      border: 1px solid #334155;
+    }
+
+    .start-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .start-card p {
+      color: #94a3b8;
+      margin-bottom: 20px;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+
+    .mode-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .mode-btn {
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 16px;
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .mode-btn:hover {
+      border-color: #38bdf8;
+      background: #1e293b;
+      transform: translateY(-2px);
+    }
+
+    .mode-btn .icon {
+      font-size: 2.2rem;
+      flex-shrink: 0;
+    }
+
+    .mode-btn .info h3 {
+      font-size: 1.15rem;
+      margin-bottom: 4px;
+      color: #f1f5f9;
+    }
+
+    .mode-btn .info p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    .cores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      margin: 22px 0 10px;
+    }
+
+    .cor-item {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 10px 6px;
+      font-size: 0.78rem;
+      border: 2px solid transparent;
+    }
+
+    .cor-item span {
+      display: block;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      margin: 0 auto 6px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #0ea5e9, #22c55e);
+      color: white;
+      border: none;
+      padding: 14px 36px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(14, 165, 233, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #334155;
+      box-shadow: none;
+      margin-top: 12px;
+    }
+
+    /* HUD */
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card);
+      border-radius: 14px;
+      padding: 12px 18px;
+      margin-bottom: 16px;
+      border: 1px solid #334155;
+    }
+
+    .hud-item {
+      text-align: center;
+    }
+
+    .hud-item .label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hud-item .value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .progress-bar {
+      height: 7px;
+      background: #334155;
+      border-radius: 4px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0ea5e9, #22c55e);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* Card do item / pergunta */
+    .item-card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 28px 22px;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 1px solid #334155;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .item-emoji {
+      font-size: 4rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .item-name {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .item-desc {
+      color: #94a3b8;
+      font-size: 0.92rem;
+      line-height: 1.45;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #f1f5f9;
+    }
+
+    .difficulty-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .diff-facil { background: rgba(34,197,94,0.2); color: #4ade80; }
+    .diff-medio { background: rgba(251,191,36,0.2); color: #fbbf24; }
+    .diff-dificil { background: rgba(239,68,68,0.2); color: #f87171; }
+
+    /* Lixeiras */
+    .bins {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+    }
+
+    .bin {
+      background: #0f172a;
+      border: 3px solid transparent;
+      border-radius: 14px;
+      padding: 16px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .bin:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .bin .bin-color {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      margin: 0 auto 8px;
+      border: 3px solid rgba(255,255,255,0.15);
+    }
+
+    .bin .bin-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 3px;
+    }
+
+    .bin .bin-material {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .bin.azul { border-color: var(--azul); }
+    .bin.azul .bin-color { background: var(--azul); }
+    .bin.vermelho { border-color: var(--vermelho); }
+    .bin.vermelho .bin-color { background: var(--vermelho); }
+    .bin.verde { border-color: var(--verde); }
+    .bin.verde .bin-color { background: var(--verde); }
+    .bin.amarelo { border-color: var(--amarelo); }
+    .bin.amarelo .bin-color { background: var(--amarelo); }
+    .bin.marrom { border-color: var(--marrom); }
+    .bin.marrom .bin-color { background: var(--marrom); }
+    .bin.cinza { border-color: var(--cinza); }
+    .bin.cinza .bin-color { background: var(--cinza); }
+
+    /* Opções do Quiz */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 14px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      font-size: 0.98rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .option:hover {
+      border-color: #38bdf8;
+      background: #1e293b;
+    }
+
+    .option .letter {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #334155;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .option.selected-correct {
+      border-color: #22c55e;
+      background: rgba(34,197,94,0.15);
+    }
+
+    .option.selected-wrong {
+      border-color: #ef4444;
+      background: rgba(239,68,68,0.15);
+    }
+
+    .option.disabled {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    /* Feedback */
+    .feedback {
+      display: none;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 22px;
+      margin-top: 18px;
+      text-align: center;
+      border: 2px solid;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.correct {
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .feedback.wrong {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .feedback .icon {
+      font-size: 2.3rem;
+      margin-bottom: 6px;
+    }
+
+    .feedback h3 {
+      margin-bottom: 8px;
+    }
+
+    .feedback p {
+      color: #cbd5e1;
+      line-height: 1.5;
+      font-size: 0.92rem;
+    }
+
+    /* Tela Final */
+    .final-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 36px 28px;
+      text-align: center;
+      border: 1px solid #334155;
+    }
+
+    .final-score {
+      font-size: 3.2rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #38bdf8, #4ade80);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 12px 0;
+    }
+
+    .final-msg {
+      color: #94a3b8;
+      margin-bottom: 24px;
+      font-size: 1.05rem;
+    }
+
+    footer {
+      margin-top: 28px;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.78rem;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.35rem; }
+      .item-emoji { font-size: 3.2rem; }
+      .bins { grid-template-columns: repeat(2, 1fr); }
+      .mode-btn { padding: 14px 14px; }
+      .question-text { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>♻️ Desafio da Coleta Seletiva</h1>
+      <p>Feira Técnica • 1º DS • Educação Ambiental</p>
+    </header>
+
+    <!-- TELA INICIAL -->
+    <div id="start-screen" class="screen active">
+      <div class="start-card">
+        <h2>Escolha o modo de jogo</h2>
+        <p>Dois desafios diferentes para testar e aprender sobre reciclagem e coleta seletiva.</p>
+
+        <div class="cores-grid">
+          <div class="cor-item"><span style="background:#1e88e5"></span>Azul<br>Papel</div>
+          <div class="cor-item"><span style="background:#e53935"></span>Vermelho<br>Plástico</div>
+          <div class="cor-item"><span style="background:#43a047"></span>Verde<br>Vidro</div>
+          <div class="cor-item"><span style="background:#fdd835"></span>Amarelo<br>Metal</div>
+          <div class="cor-item"><span style="background:#6d4c41"></span>Marrom<br>Orgânico</div>
+          <div class="cor-item"><span style="background:#78909c"></span>Cinza<br>Rejeito</div>
+        </div>
+
+        <div class="mode-buttons">
+          <div class="mode-btn" onclick="startSeparation()">
+            <div class="icon">🗑️</div>
+            <div class="info">
+              <h3>Modo Separação</h3>
+              <p>Arraste mentalmente os itens para a lixeira correta. 12 desafios práticos.</p>
+            </div>
+          </div>
+          <div class="mode-btn" onclick="startQuiz()">
+            <div class="icon">🧠</div>
+            <div class="info">
+              <h3>Modo Quiz</h3>
+              <p>Perguntas estilo Quizizz • Nível 7º ano • Dificuldade crescente</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TELA DO JOGO (Separação) -->
+    <div id="game-screen" class="screen">
+      <div class="hud">
+        <div class="hud-item">
+          <div class="label">Pontos</div>
+          <div class="value" id="score">0</div>
+        </div>
+        <div class="hud-item">
+          <div class="label">Item</div>
+          <div class="value"><span id="current">1</span>/12</div>
+        </div>
+        <div class="hud-item">
+          <div class="label">Acertos</div>
+          <div class="value" id="corrects">0</div>
+        </div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress" style="width: 0%"></div>
+      </div>
+
+      <div class="item-card">
+        <span class="item-emoji" id="item-emoji">📦</span>
+        <div class="item-name" id="item-name">Carregando...</div>
+        <div class="item-desc" id="item-desc"></div>
+      </div>
+
+      <div class="bins" id="bins"></div>
+
+      <div class="feedback" id="feedback">
+        <div class="icon" id="fb-icon"></div>
+        <h3 id="fb-title"></h3>
+        <p id="fb-text"></p>
+        <button class="btn" style="margin-top:14px" onclick="nextQuestion()">Próximo →</button>
+      </div>
+    </div>
+
+    <!-- TELA DO QUIZ -->
+    <div id="quiz-screen" class="screen">
+      <div class="hud">
+        <div class="hud-item">
+          <div class="label">Pontos</div>
+          <div class="value" id="q-score">0</div>
+        </div>
+        <div class="hud-item">
+          <div class="label">Pergunta</div>
+          <div class="value"><span id="q-current">1</span>/12</div>
+        </div>
+        <div class="hud-item">
+          <div class="label">Acertos</div>
+          <div class="value" id="q-corrects">0</div>
+        </div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="q-progress" style="width: 0%"></div>
+      </div>
+
+      <div class="item-card">
+        <div class="difficulty-tag" id="diff-tag">Fácil</div>
+        <div class="question-text" id="question-text">Carregando pergunta...</div>
+      </div>
+
+      <div class="options" id="options"></div>
+
+      <div class="feedback" id="q-feedback">
+        <div class="icon" id="q-fb-icon"></div>
+        <h3 id="q-fb-title"></h3>
+        <p id="q-fb-text"></p>
+        <button class="btn" style="margin-top:14px" onclick="nextQuizQuestion()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- TELA FINAL -->
+    <div id="end-screen" class="screen">
+      <div class="final-card">
+        <h2 id="end-title">Desafio Concluído!</h2>
+        <div class="final-score" id="final-score">0</div>
+        <p class="final-msg" id="final-msg"></p>
+        <p style="color:#94a3b8; margin-bottom:22px">
+          Você acertou <strong id="final-corrects">0</strong> de <span id="final-total">12</span>.
+        </p>
+        <button class="btn" onclick="goHome()">Escolher Outro Modo</button>
+        <br>
+        <button class="btn btn-secondary" id="replay-btn" onclick="replay()">Jogar Novamente</button>
+      </div>
+    </div>
+
+    <footer>
+      Desenvolvido para a Feira Técnica • 1º Ano Desenvolvimento de Sistemas<br>
+      Cores oficiais conforme Resolução CONAMA nº 275/2001
+    </footer>
+  </div>
+
+  <script>
+    // ========== DADOS MODO SEPARAÇÃO ==========
+    const items = [
+      {
+        emoji: "🍕",
+        name: "Caixa de pizza com residual de gordura",
+        desc: "A caixa de papelão está manchada de óleo e queijo.",
+        correct: "cinza",
+        explanation: "Papel ou papelão com gordura não pode ser reciclado. A contaminação impede o processo. Vai para o rejeito (cinza)."
+      },
+      {
+        emoji: "🥛",
+        name: "Caixa de leite (Tetra Pak)",
+        desc: "Embalagem longa vida de leite ou suco, limpa e seca.",
+        correct: "azul",
+        explanation: "Embora tenha várias camadas, as embalagens Tetra Pak são recicláveis e geralmente vão na coleta de papel (azul) ou em pontos específicos de logística reversa."
+      },
+      {
+        emoji: "🪞",
+        name: "Espelho quebrado",
+        desc: "Pedaços de espelho de banheiro.",
+        correct: "cinza",
+        explanation: "Espelhos e vidros temperados NÃO vão na lixeira verde. Possuem tratamentos químicos que contaminam o vidro reciclável. Destino: rejeito."
+      },
+      {
+        emoji: "🧴",
+        name: "Frasco de shampoo vazio",
+        desc: "Embalagem plástica de produto de higiene, bem enxaguada.",
+        correct: "vermelho",
+        explanation: "Plásticos de higiene pessoal limpos vão na lixeira vermelha. Lembre-se de enxaguar para facilitar a reciclagem."
+      },
+      {
+        emoji: "🍌",
+        name: "Casca de banana e restos de almoço",
+        desc: "Resíduos de alimentos sem embalagem.",
+        correct: "marrom",
+        explanation: "Todo material orgânico (restos de comida, cascas, borra de café) vai na lixeira marrom. Pode ser compostado."
+      },
+      {
+        emoji: "📰",
+        name: "Jornais e revistas antigas",
+        desc: "Papéis secos, sem plástico e sem sujeira.",
+        correct: "azul",
+        explanation: "Papel e papelão limpos e secos são os clássicos da lixeira azul. Evite papéis engordurados ou plastificados."
+      },
+      {
+        emoji: "🥫",
+        name: "Lata de milho e latinha de refrigerante",
+        desc: "Latas de aço e alumínio limpas.",
+        correct: "amarelo",
+        explanation: "Metais (alumínio e aço) vão na lixeira amarela. Amassar as latas ajuda a economizar espaço."
+      },
+      {
+        emoji: "🍾",
+        name: "Garrafa de azeite de vidro",
+        desc: "Garrafa de vidro transparente, sem tampa.",
+        correct: "verde",
+        explanation: "Vidros de alimentos e bebidas limpos vão na lixeira verde. Retire as tampas (que geralmente são metal ou plástico)."
+      },
+      {
+        emoji: "🧷",
+        name: "Isopor de bandeja de frios",
+        desc: "Embalagem de isopor usada para carnes ou queijos.",
+        correct: "cinza",
+        explanation: "O isopor (EPS) tem baixa reciclabilidade na maioria das cidades brasileiras e costuma ir para o rejeito (cinza)."
+      },
+      {
+        emoji: "📦",
+        name: "Caixa de papelão de entrega (limpa)",
+        desc: "Caixa de e-commerce sem fita excessiva e sem sujeira.",
+        correct: "azul",
+        explanation: "Papelão limpo é um dos materiais mais reciclados do Brasil. Vai na lixeira azul."
+      },
+      {
+        emoji: "🔋",
+        name: "Pilhas e baterias usadas",
+        desc: "Pilhas comuns e baterias de celular.",
+        correct: "cinza",
+        explanation: "Pilhas e baterias são resíduos perigosos. Não devem ir no lixo comum nem nas lixeiras de reciclagem. Procure pontos de coleta específicos (logística reversa)."
+      },
+      {
+        emoji: "🛍️",
+        name: "Sacola plástica de supermercado",
+        desc: "Sacola limpa e seca.",
+        correct: "vermelho",
+        explanation: "Sacolas plásticas limpas vão na lixeira vermelha. Melhor ainda: reutilize ou troque por ecobags!"
+      }
+    ];
+
+    const bins = [
+      { id: "azul", name: "Azul", material: "Papel / Papelão" },
+      { id: "vermelho", name: "Vermelho", material: "Plástico" },
+      { id: "verde", name: "Verde", material: "Vidro" },
+      { id: "amarelo", name: "Amarelo", material: "Metal" },
+      { id: "marrom", name: "Marrom", material: "Orgânico" },
+      { id: "cinza", name: "Cinza", material: "Rejeito" }
+    ];
+
+    // ========== DADOS MODO QUIZ (nível 7º ano, dificuldade crescente) ==========
+    const quizQuestions = [
+      // FÁCEIS (1-4)
+      {
+        difficulty: "facil",
+        question: "Qual é a cor da lixeira destinada ao papel e papelão na coleta seletiva brasileira?",
+        options: ["Azul", "Verde", "Amarelo", "Vermelho"],
+        correct: 0,
+        explanation: "A lixeira azul é oficialmente destinada a papel e papelão, conforme a Resolução CONAMA nº 275/2001."
+      },
+      {
+        difficulty: "facil",
+        question: "Para onde deve ir uma latinha de refrigerante limpa?",
+        options: ["Lixeira azul (papel)", "Lixeira amarela (metal)", "Lixeira verde (vidro)", "Lixeira cinza (rejeito)"],
+        correct: 1,
+        explanation: "Latinhas de alumínio são metal e devem ir na lixeira amarela."
+      },
+      {
+        difficulty: "facil",
+        question: "O que significa a sigla 3R da sustentabilidade?",
+        options: ["Reciclar, Reusar e Reduzir", "Reduzir, Reutilizar e Reciclar", "Reaproveitar, Reciclar e Replantar", "Reduzir, Recolher e Reciclar"],
+        correct: 1,
+        explanation: "A ordem correta dos 3R é: Reduzir o consumo, Reutilizar o que for possível e, por último, Reciclar."
+      },
+      {
+        difficulty: "facil",
+        question: "Qual material NÃO deve ser colocado na lixeira verde (vidro)?",
+        options: ["Garrafa de refrigerante de vidro", "Pote de conserva", "Espelho quebrado", "Frasco de azeite"],
+        correct: 2,
+        explanation: "Espelhos, vidros temperados e cerâmicas não vão na coleta de vidro, pois contaminam o processo de reciclagem."
+      },
+      // MÉDIOS (5-8)
+      {
+        difficulty: "medio",
+        question: "Por que uma caixa de pizza suja de gordura NÃO deve ir na lixeira azul?",
+        options: [
+          "Porque pizza não é reciclável",
+          "Porque a gordura contamina o papel e impede a reciclagem",
+          "Porque caixas de pizza são feitas de plástico",
+          "Porque o papelão sujo deve ir na lixeira marrom"
+        ],
+        correct: 1,
+        explanation: "A gordura e os resíduos de comida contaminam as fibras do papel, tornando-o inadequado para a reciclagem. Vai para o rejeito."
+      },
+      {
+        difficulty: "medio",
+        question: "O que acontece com o lixo orgânico quando é descartado corretamente na lixeira marrom?",
+        options: [
+          "É queimado para gerar energia",
+          "Pode ser transformado em adubo por meio da compostagem",
+          "É enviado para aterros sanitários comuns",
+          "É reciclado em novos produtos plásticos"
+        ],
+        correct: 1,
+        explanation: "Resíduos orgânicos podem ser compostados, gerando adubo natural e reduzindo a emissão de gases de efeito estufa nos aterros."
+      },
+      {
+        difficulty: "medio",
+        question: "Qual é a principal diferença entre coleta seletiva e reciclagem?",
+        options: [
+          "Não existe diferença, são a mesma coisa",
+          "Coleta seletiva é a separação; reciclagem é a transformação do material",
+          "Reciclagem é só para plástico; coleta seletiva é para todos os materiais",
+          "Coleta seletiva só existe em grandes cidades"
+        ],
+        correct: 1,
+        explanation: "A coleta seletiva é a etapa de separação dos materiais. A reciclagem é o processo industrial que transforma esses materiais em novos produtos."
+      },
+      {
+        difficulty: "medio",
+        question: "Embalagens Tetra Pak (caixas de leite) podem ser recicladas?",
+        options: [
+          "Não, porque têm várias camadas de materiais diferentes",
+          "Sim, geralmente entram na coleta de papel ou em pontos específicos",
+          "Só se forem lavadas com sabão especial",
+          "Apenas se forem enviadas para o exterior"
+        ],
+        correct: 1,
+        explanation: "Apesar de terem camadas de papel, plástico e alumínio, as embalagens longa vida são recicláveis e têm processo específico de separação."
+      },
+      // DIFÍCEIS (9-12)
+      {
+        difficulty: "dificil",
+        question: "Qual dos itens abaixo é considerado resíduo perigoso e exige descarte especial (logística reversa)?",
+        options: [
+          "Garrafa PET limpa",
+          "Pilhas e baterias",
+          "Jornal velho",
+          "Casca de ovo"
+        ],
+        correct: 1,
+        explanation: "Pilhas e baterias contêm metais pesados tóxicos. Devem ser entregues em pontos de coleta específicos, nunca no lixo comum ou nas lixeiras de reciclagem."
+      },
+      {
+        difficulty: "dificil",
+        question: "Segundo a Resolução CONAMA nº 275/2001, quantas cores oficiais existem para a identificação de coletores de resíduos?",
+        options: ["4 cores", "6 cores", "8 cores", "10 cores"],
+        correct: 3,
+        explanation: "A resolução estabelece 10 cores: azul, vermelho, verde, amarelo, marrom, cinza, preto, laranja, branco e roxo, cada uma para um tipo específico de resíduo."
+      },
+      {
+        difficulty: "dificil",
+        question: "Por que o isopor (EPS) costuma ser descartado como rejeito na maioria das cidades brasileiras?",
+        options: [
+          "Porque é feito de metal",
+          "Porque tem baixa densidade e o processo de reciclagem ainda é pouco viável economicamente na maioria dos municípios",
+          "Porque é orgânico",
+          "Porque a legislação proíbe sua reciclagem"
+        ],
+        correct: 1,
+        explanation: "O isopor ocupa muito volume e pesa pouco, o que torna o transporte e a reciclagem pouco rentáveis. Em algumas cidades já existem iniciativas, mas ainda não é o padrão."
+      },
+      {
+        difficulty: "dificil",
+        question: "Qual prática contribui MAIS para reduzir o impacto ambiental dos resíduos sólidos?",
+        options: [
+          "Reciclar tudo o que for possível",
+          "Reduzir a geração de resíduos na origem (consumo consciente)",
+          "Separar corretamente o lixo todos os dias",
+          "Comprar apenas produtos com embalagem reciclável"
+        ],
+        correct: 1,
+        explanation: "A hierarquia dos 3R coloca o 'Reduzir' em primeiro lugar. Evitar a geração de resíduo é a forma mais eficiente de diminuir o impacto ambiental."
+      }
+    ];
+
+    // ========== ESTADO ==========
+    let mode = null; // 'separation' ou 'quiz'
+    let currentIndex = 0;
+    let score = 0;
+    let corrects = 0;
+    let answered = false;
+    let gameItems = [];
+    let quizOrder = [];
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function hideAll() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    }
+
+    function goHome() {
+      hideAll();
+      document.getElementById('start-screen').classList.add('active');
+      mode = null;
+    }
+
+    function replay() {
+      if (mode === 'separation') startSeparation();
+      else if (mode === 'quiz') startQuiz();
+    }
+
+    // ========== MODO SEPARAÇÃO ==========
+    function startSeparation() {
+      mode = 'separation';
+      gameItems = shuffle(items);
+      currentIndex = 0;
+      score = 0;
+      corrects = 0;
+      answered = false;
+
+      hideAll();
+      document.getElementById('game-screen').classList.add('active');
+      document.getElementById('feedback').classList.remove('show');
+      renderSeparation();
+    }
+
+    function renderSeparation() {
+      answered = false;
+      const item = gameItems[currentIndex];
+
+      document.getElementById('item-emoji').textContent = item.emoji;
+      document.getElementById('item-name').textContent = item.name;
+      document.getElementById('item-desc').textContent = item.desc;
+      document.getElementById('current').textContent = currentIndex + 1;
+      document.getElementById('score').textContent = score;
+      document.getElementById('corrects').textContent = corrects;
+      document.getElementById('progress').style.width = (currentIndex / 12 * 100) + '%';
+
+      const binsContainer = document.getElementById('bins');
+      binsContainer.innerHTML = '';
+      bins.forEach(bin => {
+        const div = document.createElement('div');
+        div.className = `bin ${bin.id}`;
+        div.innerHTML = `
+          <div class="bin-color"></div>
+          <div class="bin-name">${bin.name}</div>
+          <div class="bin-material">${bin.material}</div>
+        `;
+        div.onclick = () => selectBin(bin.id);
+        binsContainer.appendChild(div);
+      });
+
+      document.getElementById('feedback').classList.remove('show');
+    }
+
+    function selectBin(selected) {
+      if (answered) return;
+      answered = true;
+
+      const item = gameItems[currentIndex];
+      const isCorrect = selected === item.correct;
+
+      const fb = document.getElementById('feedback');
+      const icon = document.getElementById('fb-icon');
+      const title = document.getElementById('fb-title');
+      const text = document.getElementById('fb-text');
+
+      if (isCorrect) {
+        score += 10;
+        corrects++;
+        fb.className = 'feedback show correct';
+        icon.textContent = '✅';
+        title.textContent = 'Correto!';
+        text.textContent = item.explanation;
+      } else {
+        fb.className = 'feedback show wrong';
+        icon.textContent = '❌';
+        title.textContent = 'Ops! Não era essa...';
+        const binName = bins.find(b => b.id === item.correct);
+        text.textContent = item.explanation + ` A resposta correta era a lixeira ${binName.name} (${binName.material}).`;
+      }
+
+      document.getElementById('score').textContent = score;
+      document.getElementById('corrects').textContent = corrects;
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex >= 12) {
+        endGame(12);
+      } else {
+        renderSeparation();
+      }
+    }
+
+    // ========== MODO QUIZ ==========
+    function startQuiz() {
+      mode = 'quiz';
+      // Mantém a ordem de dificuldade (não embaralha as perguntas, só garante progressão)
+      quizOrder = [...quizQuestions];
+      currentIndex = 0;
+      score = 0;
+      corrects = 0;
+      answered = false;
+
+      hideAll();
+      document.getElementById('quiz-screen').classList.add('active');
+      document.getElementById('q-feedback').classList.remove('show');
+      renderQuiz();
+    }
+
+    function renderQuiz() {
+      answered = false;
+      const q = quizOrder[currentIndex];
+
+      document.getElementById('question-text').textContent = q.question;
+      document.getElementById('q-current').textContent = currentIndex + 1;
+      document.getElementById('q-score').textContent = score;
+      document.getElementById('q-corrects').textContent = corrects;
+      document.getElementById('q-progress').style.width = (currentIndex / 12 * 100) + '%';
+
+      const tag = document.getElementById('diff-tag');
+      tag.className = 'difficulty-tag diff-' + q.difficulty;
+      tag.textContent = q.difficulty === 'facil' ? 'Fácil' : q.difficulty === 'medio' ? 'Médio' : 'Difícil';
+
+      const optionsContainer = document.getElementById('options');
+      optionsContainer.innerHTML = '';
+
+      const letters = ['A', 'B', 'C', 'D'];
+      q.options.forEach((opt, idx) => {
+        const div = document.createElement('div');
+        div.className = 'option';
+        div.innerHTML = `<span class="letter">${letters[idx]}</span><span>${opt}</span>`;
+        div.onclick = () => selectOption(idx);
+        optionsContainer.appendChild(div);
+      });
+
+      document.getElementById('q-feedback').classList.remove('show');
+    }
+
+    function selectOption(selectedIdx) {
+      if (answered) return;
+      answered = true;
+
+      const q = quizOrder[currentIndex];
+      const isCorrect = selectedIdx === q.correct;
+      const options = document.querySelectorAll('#options .option');
+
+      options.forEach((opt, idx) => {
+        opt.classList.add('disabled');
+        if (idx === q.correct) {
+          opt.classList.add('selected-correct');
+        } else if (idx === selectedIdx && !isCorrect) {
+          opt.classList.add('selected-wrong');
+        }
+      });
+
+      const fb = document.getElementById('q-feedback');
+      const icon = document.getElementById('q-fb-icon');
+      const title = document.getElementById('q-fb-title');
+      const text = document.getElementById('q-fb-text');
+
+      if (isCorrect) {
+        // Pontuação maior nas perguntas difíceis
+        const points = q.difficulty === 'facil' ? 10 : q.difficulty === 'medio' ? 15 : 20;
+        score += points;
+        corrects++;
+        fb.className = 'feedback show correct';
+        icon.textContent = '✅';
+        title.textContent = 'Resposta correta!';
+        text.textContent = q.explanation;
+      } else {
+        fb.className = 'feedback show wrong';
+        icon.textContent = '❌';
+        title.textContent = 'Não foi dessa vez...';
+        text.textContent = q.explanation + ` A resposta certa era a opção ${['A','B','C','D'][q.correct]}.`;
+      }
+
+      document.getElementById('q-score').textContent = score;
+      document.getElementById('q-corrects').textContent = corrects;
+    }
+
+    function nextQuizQuestion() {
+      currentIndex++;
+      if (currentIndex >= 12) {
+        endGame(12);
+      } else {
+        renderQuiz();
+      }
+    }
+
+    // ========== FIM DE JOGO ==========
+    function endGame(total) {
+      hideAll();
+      document.getElementById('end-screen').classList.add('active');
+
+      document.getElementById('final-score').textContent = score;
+      document.getElementById('final-corrects').textContent = corrects;
+      document.getElementById('final-total').textContent = total;
+
+      const title = document.getElementById('end-title');
+      const msg = document.getElementById('final-msg');
+
+      if (mode === 'quiz') {
+        title.textContent = 'Quiz Concluído!';
+      } else {
+        title.textContent = 'Desafio Concluído!';
+      }
+
+      if (corrects === total) {
+        msg.textContent = 'Perfeito! Você mandou muito bem! 🏆';
+      } else if (corrects >= total * 0.75) {
+        msg.textContent = 'Excelente desempenho! Você domina bem o assunto. 🌱';
+      } else if (corrects >= total * 0.5) {
+        msg.textContent = 'Bom resultado! Ainda dá para melhorar. Continue praticando!';
+      } else {
+        msg.textContent = 'Que tal revisar o conteúdo e tentar de novo? Você consegue!';
+      }
+    }
+  </script>
+</body>
+</html>
